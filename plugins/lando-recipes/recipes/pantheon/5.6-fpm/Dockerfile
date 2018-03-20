@@ -5,6 +5,7 @@
 FROM devwithlando/php:5.6-fpm
 
 # Version information
+ENV BACKDRUSH_VERSION 0.0.6
 ENV WKHTMLTOPDF_VERSION 0.12.2
 ENV PHANTOMJS_VERSION 2.1.1
 ENV TERMINUS_VERSION 1.7.1
@@ -15,13 +16,23 @@ RUN apt-get update && apt-get install -y \
     openjdk-7-jre-headless \
     openjdk-7-jdk \
   && rm -f /usr/local/etc/php/conf.d/*-memcached.ini \
+  && curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
+  && chmod +x wp-cli.phar \
+  && mv wp-cli.phar /usr/local/bin/wp \
+  && wget https://github.com/drush-ops/drush/releases/download/8.1.16/drush.phar \
+  && php drush.phar core-status \
+  && chmod +x drush.phar \
+  && mv drush.phar /usr/local/bin/drush \
+  && mkdir -p /var/www/.composer \
+  && cd /var/www/.composer \
+  && curl -O https://raw.githubusercontent.com/pantheon-systems/terminus-installer/master/builds/installer.phar \
+  && php installer.phar install --install-version=$TERMINUS_VERSION \
+  && curl https://drupalconsole.com/installer -L -o drupal.phar \
+  && chmod +x drupal.phar \
+  && mv drupal.phar /usr/local/bin/drupal \
   && mkdir -p /var/www/.drush \
   && mkdir -p /var/www/.backdrush \
-  && mkdir -p /var/www/.composer \
-  && mkdir -p /var/www/.drupal \
-  && mkdir -p /srv/bin \
-  && curl -O "https://raw.githubusercontent.com/pantheon-systems/terminus-installer/master/builds/installer.phar" \
-  && php installer.phar install --install-version=$TERMINUS_VERSION \
+  && curl -fsSL "https://github.com/backdrop-contrib/drush/archive/${BACKDRUSH_VERSION}.tar.gz" | tar -xz --strip-components=1 -C /var/www/.backdrush \
   && cd /tmp && curl -OL "https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/${WKHTMLTOPDF_VERSION}/wkhtmltox-${WKHTMLTOPDF_VERSION}_linux-jessie-amd64.deb" \
   && dpkg -i /tmp/wkhtmltox-${WKHTMLTOPDF_VERSION}_linux-jessie-amd64.deb \
   && mkdir -p /srv/bin && ln -s /usr/local/bin/wkhtmltopdf /srv/bin/wkhtmltopdf \
@@ -36,7 +47,7 @@ RUN apt-get update && apt-get install -y \
   && rm /tmp/apache-tika-1.1-src.zip \
   && cd /tmp/apache-tika-1.1 && /tmp/apache-maven-${MAVEN_VERSION}/bin/mvn install \
   && cp -rf /tmp/apache-tika-1.1/tika-app/target/tika-app-1.1.jar /srv/bin/tika-app-1.1.jar \
-  && apt-get -y remove openjdk-8-jdk \
+  && apt-get -y remove openjdk-7-jdk \
   && apt-get -y clean \
   && apt-get -y autoclean \
   && apt-get -y autoremove \
