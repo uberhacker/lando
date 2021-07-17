@@ -1,5 +1,7 @@
 # 2021
 
+* Updated default `composer` version to `2.1.3`
+
 ## v3.1.4 - [May 10, 2021](https://github.com/lando/lando/releases/tag/v3.1.4)
 
 Lando is **free** and **open source** software that relies on contributions from developers like you! If you like Lando then help us spend more time making, updating and supporting it by [contributing](https://github.com/sponsors/lando).

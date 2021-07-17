@@ -48,7 +48,7 @@ Here are the configuration options, set to the default values, for this recipe's
 recipe: laravel
 config:
   php: '7.3'
-  composer_version: '2.0.7'
+  composer_version: '2.1.3'
   via: apache:2.4
   webroot: .
   database: mysql:5.7
